@@ -5,22 +5,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seunfunmi Adegoke - Software Engineer</title>
+    <meta name="description"
+        content="Seunfunmi Adegoke — Software Engineer specializing in AI/LLM systems, scalable backend solutions, and cloud infrastructure.">
+    <meta name="author" content="Seunfunmi Adegoke">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Seunfunmi Adegoke - Software Engineer">
+    <meta property="og:description"
+        content="Software Engineer specializing in AI/LLM systems, scalable backend solutions, and cloud infrastructure.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://seunfunmiadegoke.com">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Seunfunmi Adegoke - Software Engineer">
+    <meta name="twitter:description"
+        content="Software Engineer specializing in AI/LLM systems, scalable backend solutions, and cloud infrastructure.">
+
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>S</text></svg>">
+
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body>
+<body data-theme="dark">
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
             <ul class="nav-menu">
                 <li><a href="#home" class="nav-link active">home</a></li>
-                <li><a href="#about" class="nav-link">about</a></li>
-                <li><a href="#experience" class="nav-link">experience</a></li>
-                <li><a href="#skills" class="nav-link">skills</a></li>
-                <li><a href="#contact" class="nav-link">contact</a></li>
+                <li><a href="talks.html" class="nav-link">talks</a></li>
+                <li><a href="musings.html" class="nav-link">musings</a></li>
             </ul>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
         </div>
     </nav>
 
@@ -31,151 +53,56 @@
             <section id="home" class="hero">
                 <div class="hero-content">
                     <h1 class="hero-title">
-                        Hey 👋, I'm <span class="highlight">Seunfunmi Adegoke</span>
+                        Hey, I'm <span class="highlight">Seunfunmi Adegoke</span>
                     </h1>
                     <div class="hero-description">
                         <p>
-                            I'm a <a href="#experience" class="link">software engineer</a> deeply interested in bridging
-                            connections between developers and state-of-the-art technology. I specialize in building <a
-                                href="#skills" class="link">AI/LLM systems</a>, designing <a href="#experience"
-                                class="link">scalable backend solutions</a>, and contributing to <a href="#skills"
+                            I'm a software engineer deeply interested in bridging
+                            connections between developers and state-of-the-art technology. I specialize in building
+                            AI/LLM systems, designing scalable backend solutions, and contributing to <a
+                                href="https://github.com/seunfunmi-adegoke" target="_blank"
                                 class="link">open-source projects</a>.
                         </p>
                         <p>
-                            Presently, I'm working on <a href="#skills" class="link">generative AI applications</a> and
-                            <a href="#skills" class="link">cloud infrastructure</a>. I'm passionate about creating
+                            Presently, I'm working on generative AI applications
+                            and cloud infrastructure. I'm passionate about creating
                             impactful solutions that solve real-world problems.
                         </p>
+                        <p>
+                            I thrive in fast-paced, high-ownership environments and enjoy solving complex problems with a
+                            practical, user-centered approach. I believe in Shoshin (&#21021;&#24515;), the "beginner's
+                            mind" — always learning, iterating, and looking for ways to ship
+                            better software. Here's my <a href="YOUR_GOOGLE_DOCS_URL_HERE" target="_blank"
+                                class="link">resume</a>.
+                        </p>
                     </div>
-                </div>
-            </section>
-
-            <!-- About Section -->
-            <section id="about" class="section">
-                <h2 class="section-title">About</h2>
-                <div class="section-content">
-                    <p>
-                        I'm a mission-driven software engineer passionate about building impactful applications. I
-                        specialize in designing backend systems, deploying scalable cloud infrastructure, and
-                        integrating large language models (LLMs) into production environments.
-                    </p>
-                    <p>
-                        I thrive in fast-paced, high-ownership environments and enjoy solving complex problems with a
-                        practical, user-centered approach. I believe in Shoshin (初心), the "beginner's mind", as a
-                        lifelong principle and am always learning, iterating, and looking for ways to ship better
-                        software that solves real problems.
-                    </p>
-                </div>
-            </section>
-
-            <!-- Experience Section -->
-            <section id="experience" class="section">
-                <h2 class="section-title">Experience</h2>
-                <div class="section-content">
-                    <div class="experience-item">
-                        <h3>AI Engineer</h3>
-                        <p class="company">Turing</p>
-                        <p class="duration">Jan 2023 - Present</p>
-                        <p>Working on AI/LLM systems and generative AI applications.</p>
-                    </div>
-
-                    <div class="experience-item">
-                        <h3>Software Engineer</h3>
-                        <p class="company">Wyreng.com</p>
-                        <p class="duration">Dec 2022 - Jun 2023</p>
-                        <p>Developed fault-tolerant, scalable backend for solar house systems. Designed WebSocket layer
-                            for real-time IoT communication (32% latency reduction). Built CI/CD pipelines using GitHub
-                            Actions (20% faster release cycles).</p>
-                    </div>
-
-                    <div class="experience-item">
-                        <h3>Software Engineer</h3>
-                        <p class="company">Sendme.ng</p>
-                        <p class="duration">Jan 2022 - Jan 2023</p>
-                        <p>Developed backend service for payment checkout (42% fraud reduction). Built affiliate system
-                            backend (22% sales increase). Managed delivery/logistics mobile app backend (45% delivery
-                            time reduction).</p>
-                    </div>
-
-                    <div class="experience-item">
-                        <h3>Cloud Developer Session Lead</h3>
-                        <p class="company">Udacity</p>
-                        <p class="duration">Jun 2022 - Nov 2022</p>
-                        <p>Mentored 180+ students on AWS services, Docker, and Kubernetes. Led technical guidance and
-                            role-based group exercises.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Skills Section -->
-            <section id="skills" class="section">
-                <h2 class="section-title">Skills</h2>
-                <div class="section-content">
-                    <div class="skills-grid">
-                        <div class="skill-category">
-                            <h3>Languages & Frameworks</h3>
-                            <div class="skill-tags">
-                                <span class="skill-tag">Python</span>
-                                <span class="skill-tag">JavaScript</span>
-                                <span class="skill-tag">Django</span>
-                                <span class="skill-tag">FastAPI</span>
-                                <span class="skill-tag">React</span>
-                            </div>
-                        </div>
-
-                        <div class="skill-category">
-                            <h3>AI & LLM Tools</h3>
-                            <div class="skill-tags">
-                                <span class="skill-tag">Langchain</span>
-                                <span class="skill-tag">OpenAI API</span>
-                                <span class="skill-tag">GPT-4</span>
-                                <span class="skill-tag">LLaMA</span>
-                                <span class="skill-tag">RAG</span>
-                            </div>
-                        </div>
-
-                        <div class="skill-category">
-                            <h3>Cloud & Infrastructure</h3>
-                            <div class="skill-tags">
-                                <span class="skill-tag">AWS</span>
-                                <span class="skill-tag">GCP</span>
-                                <span class="skill-tag">Docker</span>
-                                <span class="skill-tag">Kubernetes</span>
-                                <span class="skill-tag">CI/CD</span>
-                            </div>
-                        </div>
-
-                        <div class="skill-category">
-                            <h3>Databases</h3>
-                            <div class="skill-tags">
-                                <span class="skill-tag">PostgreSQL</span>
-                                <span class="skill-tag">MongoDB</span>
-                                <span class="skill-tag">Pinecone</span>
-                                <span class="skill-tag">Redis</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Contact Section -->
-            <section id="contact" class="section">
-                <h2 class="section-title">Contact</h2>
-                <div class="section-content">
-                    <p>I'm always interested in hearing about new opportunities and interesting projects. Feel free to
-                        reach out!</p>
-                    <div class="contact-links">
-                        <a href="mailto:adegokeseunfunmi1999@gmail.com" class="contact-link">
-                            <i class="fas fa-envelope"></i>
-                            <span>Email</span>
+                    <div class="social-links">
+                        <a href="mailto:adegokeseunfunmi1999@gmail.com" aria-label="Send email to Seunfunmi Adegoke">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect width="20" height="16" x="2" y="4" rx="2" />
+                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                            </svg>
                         </a>
-                        <a href="https://www.linkedin.com/in/seunfunmi-adegoke" target="_blank" class="contact-link">
-                            <i class="fab fa-linkedin"></i>
-                            <span>LinkedIn</span>
+                        <a href="https://www.linkedin.com/in/seunfunmi-adegoke" target="_blank"
+                            aria-label="View Seunfunmi Adegoke on LinkedIn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                                <rect width="4" height="12" x="2" y="9" />
+                                <circle cx="4" cy="4" r="2" />
+                            </svg>
                         </a>
-                        <a href="https://github.com/seunfunmi-adegoke" target="_blank" class="contact-link">
-                            <i class="fab fa-github"></i>
-                            <span>GitHub</span>
+                        <a href="https://github.com/seunfunmi-adegoke" target="_blank"
+                            aria-label="View Seunfunmi Adegoke on GitHub">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+                                <path d="M9 18c-4.51 2-5-2-7-2" />
+                            </svg>
                         </a>
                     </div>
                 </div>
@@ -183,9 +110,24 @@
         </div>
     </main>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="content-wrapper">
+            <p>Built by Seunfunmi Adegoke</p>
+        </div>
+    </footer>
+
     <!-- Theme Toggle -->
-    <button class="theme-toggle" id="themeToggle">
-        <i class="fas fa-star"></i>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle light and dark theme">
+        <svg class="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+        <svg class="theme-icon-light" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
     </button>
 
     <script src="script.js"></script>
