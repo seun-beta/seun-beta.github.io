@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>When Your Observability Tool Can't Observe - Seunfunmi Adegoke</title>
+    <meta name="description"
+        content="Debugging Langfuse, OpenTelemetry, and oversized span attributes caused by serializing binary data.">
+
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>S</text></svg>">
+
+    <link rel="stylesheet" href="../styles.css">
+
+    <!-- Prism.js theme -->
+    <style>
+        /* Custom syntax highlighting, editor-inspired */
+        .musing-full pre {
+            position: relative;
+        }
+
+        .musing-full pre code .token.decorator,
+        .musing-full pre code .token.annotation {
+            color: #c084fc;
+        }
+
+        .musing-full pre code .token.keyword {
+            color: #c084fc;
+        }
+
+        .musing-full pre code .token.function {
+            color: #60a5fa;
+        }
+
+        .musing-full pre code .token.class-name {
+            color: #67e8f9;
+        }
+
+        .musing-full pre code .token.string {
+            color: #86efac;
+        }
+
+        .musing-full pre code .token.number {
+            color: #fbbf24;
+        }
+
+        .musing-full pre code .token.boolean {
+            color: #fbbf24;
+        }
+
+        .musing-full pre code .token.operator {
+            color: #f0abfc;
+        }
+
+        .musing-full pre code .token.punctuation {
+            color: var(--text-muted);
+        }
+
+        .musing-full pre code .token.builtin {
+            color: #67e8f9;
+        }
+
+        .musing-full pre code .token.comment {
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .musing-full pre code .token.parameter {
+            color: #fb923c;
+        }
+
+        .musing-full pre code .token.property {
+            color: var(--text-body);
+        }
+
+        /* Light theme overrides */
+        [data-theme="light"] .musing-full pre code .token.keyword {
+            color: #7c3aed;
+        }
+
+        [data-theme="light"] .musing-full pre code .token.function {
+            color: #2563eb;
+        }
+
+        [data-theme="light"] .musing-full pre code .token.class-name {
+            color: #0891b2;
+        }
+
+        [data-theme="light"] .musing-full pre code .token.string {
+            color: #16a34a;
+        }
+
+        [data-theme="light"] .musing-full pre code .token.number,
+        [data-theme="light"] .musing-full pre code .token.boolean {
+            color: #d97706;
+        }
+
+        [data-theme="light"] .musing-full pre code .token.operator {
+            color: #a855f7;
+        }
+
+        [data-theme="light"] .musing-full pre code .token.comment {
+            color: #9ca3af;
+        }
+
+        [data-theme="light"] .musing-full pre code .token.parameter {
+            color: #ea580c;
+        }
+
+        [data-theme="light"] .musing-full pre code .token.decorator,
+        [data-theme="light"] .musing-full pre code .token.annotation {
+            color: #7c3aed;
+        }
+    </style>
+</head>
+
+<body data-theme="dark">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-menu">
+                <li><a href="../index.html" class="nav-link">home</a></li>
+                <li><a href="../talks.html" class="nav-link">talks</a></li>
+                <li><a href="../musings.html" class="nav-link active">musings</a></li>
+            </ul>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <section class="hero">
+                <p class="musing-back"><a href="../musings.html" class="link">&larr; all musings</a></p>
+                <p class="musing-date">February 2026</p>
+                <h1 class="hero-title">When Your Observability Tool Can't Observe: Langfuse, OpenTelemetry, and the Span That Was Too Large</h1>
+            </section>
+
+            <section class="section">
+                <div class="section-content">
+                    <article class="musing-full">
+
+                        <p>When I added Langfuse tracing to an application, I expected the usual debugging cycle, missing spans, wrong nesting, maybe some async context issues. What I didn't expect was the tracing infrastructure itself becoming the source of failures.</p>
+
+                        <h4>The Setup</h4>
+
+                        <p>Langfuse's <code>@observe</code> decorator is elegant. Wrap a function, and it captures inputs, outputs, timing, and errors automatically:</p>
+
+<pre><code class="language-python">@observe(as_type="span")
+async def my_function(arg1, arg2):
+    ...</code></pre>
+
+                        <p>Under the hood, Langfuse v3 uses OpenTelemetry. Each <code>@observe</code> call creates an OTel span, and the function's arguments and return values are serialized as span attributes.</p>
+
+                        <h4>The Problem</h4>
+
+                        <p>After deploying tracing, spans started silently failing to export. No errors in the application logs, the functions ran fine, but traces were incomplete or missing entirely in the Langfuse dashboard.</p>
+
+                        <p>The culprit was hiding in plain sight: some functions were receiving large binary data as arguments.</p>
+
+<pre><code class="language-python">@observe(as_type="span")
+def do_something(data: BytesIO) -> bytes:
+    ...</code></pre>
+
+                        <p>When <code>@observe</code> captures inputs, it serializes function arguments into span attributes. A <code>BytesIO</code> containing a 15MB file becomes a 15MB span attribute. If several functions in a call chain handle binary data, you're shipping hundreds of megabytes to your tracing backend per request.</p>
+
+                        <p>OpenTelemetry has a default attribute value length limit, and even when it doesn't reject the data outright, the OTLP exporter struggles with payloads this large. Spans get dropped. The exporter backs up. Traces arrive incomplete.</p>
+
+                        <h4>The Fix (Two Parts)</h4>
+
+                        <p><strong>Part 1: Stop capturing binary data.</strong> Langfuse's <code>@observe</code> accepts <code>capture_input</code> and <code>capture_output</code> parameters:</p>
+
+<pre><code class="language-python">@observe(as_type="span", capture_input=False, capture_output=False)
+def do_something(data: BytesIO) -> bytes:
+    ...</code></pre>
+
+                        <p>For functions that handle binary content, I disabled I/O capture. The span still records timing, errors, and nesting. You just don't get a multi-megabyte hex dump in your trace viewer.</p>
+
+                        <p><strong>Part 2: Set the OTel attribute length limit.</strong> As a safety net, I set <code>OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT=2000</code> in the environment. This truncates any attribute value that exceeds 2,000 characters, preventing a stray <code>str(some_large_object)</code> from blowing up span export.</p>
+
+                        <h4>What I Learned</h4>
+
+                        <p>The <code>@observe</code> decorator's default behavior, capture everything, is the right default for most functions. When your function takes a string prompt and returns a string response, automatic capture is pure upside. But the decorator doesn't distinguish between a 200-character prompt and a 20MB file buffer. It serializes whatever you give it.</p>
+
+                        <p>The mental model that helped: think of span attributes like log lines. You wouldn't <code>logger.info(f"Processing: {twenty_mb_of_bytes}")</code>. Apply the same judgement to tracing.</p>
+
+                        <p><strong>Functions that should have I/O capture disabled:</strong></p>
+                        <ul>
+                            <li>Anything that accepts or returns raw bytes or <code>BytesIO</code></li>
+                            <li>File download or upload utilities</li>
+                            <li>Format conversion functions</li>
+                            <li>Anything where the input/output is opaque binary rather than structured data</li>
+                        </ul>
+
+                        <p><strong>Functions that benefit from I/O capture:</strong></p>
+                        <ul>
+                            <li>LLM calls (prompts and responses are the whole point)</li>
+                            <li>Search/retrieval functions (queries and results)</li>
+                            <li>Business logic that transforms structured data</li>
+                        </ul>
+
+                        <p>The irony isn't lost on me: I added observability to understand an application better, and the first thing I had to debug was the observability itself.</p>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="content-wrapper">
+            <p>Built by Seunfunmi Adegoke</p>
+        </div>
+    </footer>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle light and dark theme">
+        <svg class="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+        <svg class="theme-icon-light" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+    </button>
+
+    <script src="../script.js"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+
+</html>

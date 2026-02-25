@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musings - Seunfunmi Adegoke</title>
+    <meta name="description" content="Thoughts and writings by Seunfunmi Adegoke on technology, software engineering, and building things.">
+
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>S</text></svg>">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body data-theme="dark">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">home</a></li>
+                <li><a href="talks.html" class="nav-link">talks</a></li>
+                <li><a href="musings.html" class="nav-link active">musings</a></li>
+            </ul>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <section class="hero">
+                <h1 class="hero-title">Musings</h1>
+                <div class="hero-description">
+                    <p>Thoughts on technology, software engineering, and building things that matter.</p>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-content">
+                    <div class="musings-list">
+                        <a href="musings/langfuse-observability.html" class="musing-link">
+                            <p class="musing-date">February 2026</p>
+                            <h3 class="musing-title">When Your Observability Tool Can't Observe: Langfuse, OpenTelemetry, and the Span That Was Too Large</h3>
+                            <p class="musing-excerpt">When I added Langfuse tracing to an application, I expected the usual debugging cycle. What I didn't expect was the tracing infrastructure itself becoming the source of failures.</p>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="content-wrapper">
+            <p>Built by Seunfunmi Adegoke</p>
+        </div>
+    </footer>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle light and dark theme">
+        <svg class="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+        <svg class="theme-icon-light" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
