@@ -88,16 +88,17 @@ body {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     z-index: 1000;
-    padding: 1rem 0;
+    padding: 1rem 2rem;
     border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
 }
 
 .nav-container {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 2rem;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    justify-content: space-between;
     align-items: center;
 }
 
@@ -105,8 +106,14 @@ body {
     display: flex;
     list-style: none;
     gap: 2rem;
-    width: 100%;
-    justify-content: center;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
 .nav-link {
@@ -442,21 +449,18 @@ body {
    Theme Toggle
    ============================================= */
 .theme-toggle {
-    position: fixed;
-    top: 2rem;
-    right: 2rem;
     background: var(--accent-bg);
     border: 1px solid var(--accent-border);
     color: var(--accent);
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: background var(--transition), border-color var(--transition), transform var(--transition);
-    z-index: 1001;
+    flex-shrink: 0;
 }
 
 .theme-toggle:hover {
@@ -483,7 +487,9 @@ body {
     }
 
     .nav-container {
-        padding: 0 1.5rem;
+        position: static;
+        transform: none;
+        padding: 0;
     }
 
     .mobile-menu-toggle {
@@ -515,11 +521,6 @@ body {
 
     .hero-title {
         font-size: 1.5rem;
-    }
-
-    .theme-toggle {
-        top: 1rem;
-        right: 1rem;
     }
 }
 
