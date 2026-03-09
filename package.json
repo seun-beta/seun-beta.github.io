@@ -1,0 +1,24 @@
+{
+  "name": "portfolio",
+  "version": "1.0.0",
+  "description": "Welcome to my portfolio",
+  "main": "build-musings.js",
+  "scripts": {
+    "build": "node build-musings.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seun-beta/seun-portfolio.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/seun-beta/seun-portfolio/issues"
+  },
+  "homepage": "https://github.com/seun-beta/seun-portfolio#readme",
+  "dependencies": {
+    "marked": "^17.0.4"
+  }
+}
