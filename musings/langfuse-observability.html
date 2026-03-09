@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>When Your Observability Tool Can't Observe - Seunfunmi Adegoke</title>
+    <title>When Your Observability Tool Can't Observe: Langfuse, OpenTelemetry, and the Span That Was Too Large -
+        Seunfunmi Adegoke</title>
     <meta name="description"
         content="Debugging Langfuse, OpenTelemetry, and oversized span attributes caused by serializing binary data.">
 
@@ -132,12 +133,15 @@
         </div>
         <div class="nav-actions">
             <button class="theme-toggle" id="themeToggle" aria-label="Toggle light and dark theme">
-                <svg class="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                <svg class="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polygon
+                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                 </svg>
-                <svg class="theme-icon-light" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="theme-icon-light" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                 </svg>
             </button>
@@ -150,58 +154,84 @@
             <section class="hero">
                 <p class="musing-back"><a href="../musings.html" class="link">&larr; all musings</a></p>
                 <p class="musing-date">February 2026</p>
-                <h1 class="hero-title">When Your Observability Tool Can't Observe: Langfuse, OpenTelemetry, and the Span That Was Too Large</h1>
+                <h1 class="hero-title">When Your Observability Tool Can't Observe: Langfuse, OpenTelemetry, and the Span
+                    That Was Too Large</h1>
             </section>
 
             <section class="section">
                 <div class="section-content">
                     <article class="musing-full">
-
-                        <p>When I added Langfuse tracing to an application, I expected the usual debugging cycle, missing spans, wrong nesting, maybe some async context issues. What I didn't expect was the tracing infrastructure itself becoming the source of failures.</p>
+                        <p>When I added Langfuse tracing to an application, I expected the usual debugging cycle,
+                            missing spans, wrong nesting, maybe some async context issues. What I didn&#39;t expect was
+                            the tracing infrastructure itself becoming the source of failures.</p>
 
                         <h4>The Setup</h4>
 
-                        <p>Langfuse's <code>@observe</code> decorator is elegant. Wrap a function, and it captures inputs, outputs, timing, and errors automatically:</p>
+                        <p>Langfuse&#39;s <code>@observe</code> decorator is elegant. Wrap a function, and it captures
+                            inputs, outputs, timing, and errors automatically:</p>
 
-<pre><code class="language-python">@observe(as_type="span")
+                        <pre><code class="language-python">@observe(as_type="span")
 async def my_function(arg1, arg2):
     ...</code></pre>
 
-                        <p>Under the hood, Langfuse v3 uses OpenTelemetry. Each <code>@observe</code> call creates an OTel span, and the function's arguments and return values are serialized as span attributes.</p>
+                        <p>Under the hood, Langfuse v3 uses OpenTelemetry. Each <code>@observe</code> call creates an
+                            OTel span, and the function&#39;s arguments and return values are serialized as span
+                            attributes.</p>
 
                         <h4>The Problem</h4>
 
-                        <p>After deploying tracing, spans started silently failing to export. No errors in the application logs, the functions ran fine, but traces were incomplete or missing entirely in the Langfuse dashboard.</p>
+                        <p>After deploying tracing, spans started silently failing to export. No errors in the
+                            application logs, the functions ran fine, but traces were incomplete or missing entirely in
+                            the Langfuse dashboard.</p>
 
-                        <p>The culprit was hiding in plain sight: some functions were receiving large binary data as arguments.</p>
+                        <p>The culprit was hiding in plain sight: some functions were receiving large binary data as
+                            arguments.</p>
 
-<pre><code class="language-python">@observe(as_type="span")
+                        <pre><code class="language-python">@observe(as_type="span")
 def do_something(data: BytesIO) -> bytes:
     ...</code></pre>
 
-                        <p>When <code>@observe</code> captures inputs, it serializes function arguments into span attributes. A <code>BytesIO</code> containing a 15MB file becomes a 15MB span attribute. If several functions in a call chain handle binary data, you're shipping hundreds of megabytes to your tracing backend per request.</p>
+                        <p>When <code>@observe</code> captures inputs, it serializes function arguments into span
+                            attributes. A <code>BytesIO</code> containing a 15MB file becomes a 15MB span attribute. If
+                            several functions in a call chain handle binary data, you&#39;re shipping hundreds of
+                            megabytes to your tracing backend per request.</p>
 
-                        <p>OpenTelemetry has a default attribute value length limit, and even when it doesn't reject the data outright, the OTLP exporter struggles with payloads this large. Spans get dropped. The exporter backs up. Traces arrive incomplete.</p>
+                        <p>OpenTelemetry has a default attribute value length limit, and even when it doesn&#39;t reject
+                            the data outright, the OTLP exporter struggles with payloads this large. Spans get dropped.
+                            The exporter backs up. Traces arrive incomplete.</p>
 
                         <h4>The Fix (Two Parts)</h4>
 
-                        <p><strong>Part 1: Stop capturing binary data.</strong> Langfuse's <code>@observe</code> accepts <code>capture_input</code> and <code>capture_output</code> parameters:</p>
+                        <p><strong>Part 1: Stop capturing binary data.</strong> Langfuse&#39;s <code>@observe</code>
+                            accepts <code>capture_input</code> and <code>capture_output</code> parameters:</p>
 
-<pre><code class="language-python">@observe(as_type="span", capture_input=False, capture_output=False)
+                        <pre><code class="language-python">@observe(as_type="span", capture_input=False, capture_output=False)
 def do_something(data: BytesIO) -> bytes:
     ...</code></pre>
 
-                        <p>For functions that handle binary content, I disabled I/O capture. The span still records timing, errors, and nesting. You just don't get a multi-megabyte hex dump in your trace viewer.</p>
+                        <p>For functions that handle binary content, I disabled I/O capture. The span still records
+                            timing, errors, and nesting. You just don&#39;t get a multi-megabyte hex dump in your trace
+                            viewer.</p>
 
-                        <p><strong>Part 2: Set the OTel attribute length limit.</strong> As a safety net, I set <code>OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT=2000</code> in the environment. This truncates any attribute value that exceeds 2,000 characters, preventing a stray <code>str(some_large_object)</code> from blowing up span export.</p>
+                        <p><strong>Part 2: Set the OTel attribute length limit.</strong> As a safety net, I set
+                            <code>OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT=2000</code> in the environment. This truncates any
+                            attribute value that exceeds 2,000 characters, preventing a stray
+                            <code>str(some_large_object)</code> from blowing up span export.</p>
 
                         <h4>What I Learned</h4>
 
-                        <p>The <code>@observe</code> decorator's default behavior, capture everything, is the right default for most functions. When your function takes a string prompt and returns a string response, automatic capture is pure upside. But the decorator doesn't distinguish between a 200-character prompt and a 20MB file buffer. It serializes whatever you give it.</p>
+                        <p>The <code>@observe</code> decorator&#39;s default behavior, capture everything, is the right
+                            default for most functions. When your function takes a string prompt and returns a string
+                            response, automatic capture is pure upside. But the decorator doesn&#39;t distinguish
+                            between a 200-character prompt and a 20MB file buffer. It serializes whatever you give it.
+                        </p>
 
-                        <p>The mental model that helped: think of span attributes like log lines. You wouldn't <code>logger.info(f"Processing: {twenty_mb_of_bytes}")</code>. Apply the same judgement to tracing.</p>
+                        <p>The mental model that helped: think of span attributes like log lines. You wouldn&#39;t
+                            <code>logger.info(f&quot;Processing: {twenty_mb_of_bytes}&quot;)</code>. Apply the same
+                            judgement to tracing.</p>
 
                         <p><strong>Functions that should have I/O capture disabled:</strong></p>
+
                         <ul>
                             <li>Anything that accepts or returns raw bytes or <code>BytesIO</code></li>
                             <li>File download or upload utilities</li>
@@ -210,13 +240,17 @@ def do_something(data: BytesIO) -> bytes:
                         </ul>
 
                         <p><strong>Functions that benefit from I/O capture:</strong></p>
+
                         <ul>
                             <li>LLM calls (prompts and responses are the whole point)</li>
                             <li>Search/retrieval functions (queries and results)</li>
                             <li>Business logic that transforms structured data</li>
                         </ul>
 
-                        <p>The irony isn't lost on me: I added observability to understand an application better, and the first thing I had to debug was the observability itself.</p>
+                        <p>The irony isn&#39;t lost on me: I added observability to understand an application better,
+                            and the first thing I had to debug was the observability itself.</p>
+
+
                     </article>
                 </div>
             </section>
